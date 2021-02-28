@@ -68,7 +68,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if '"status": "invalid"' in res.content:
             raise serializers.ValidationError({'email': "invalid email address"})
         enrichment = clearbit.Enrichment.find(email=self.validated_data['email'])
-        if enrichment and enrichment['person']:
+        first_name = ''
+        last_name = ''
+        if enrichment and enrichment.has_key('person'):
             first_name = enrichment['person']['name']['givenName']
             last_name = enrichment['person']['name']['familyName']
         user = User(
