@@ -12,11 +12,12 @@ clearbit.key = CLEARBIT_KEY
 class PostSerializer(serializers.ModelSerializer):
 
     creator = serializers.ReadOnlyField(source='creator.username')
-    likes = serializers.PrimaryKeyRelatedField(many=True, allow_empty=True, queryset=Like.objects.all())
+    likes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Post
         fields = ('post_id', 'creator', 'content', 'likes')
+        read_only_fields = ('creator', 'likes')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'posts', 'liked_posts')
+        fields = ('id', 'username', 'posts', 'liked_posts')
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -71,8 +72,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         first_name = ''
         last_name = ''
         if enrichment and enrichment.has_key('person'):
-            first_name = enrichment['person']['name']['givenName']
-            last_name = enrichment['person']['name']['familyName']
+            first_name = enrichment['person']['name']['givenName'] or first_name
+            last_name = enrichment['person']['name']['familyName'] or first_name
         user = User(
             email=self.validated_data['email'],
             username=self.validated_data['username'],
@@ -80,5 +81,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
             first_name=first_name,
             last_name=last_name
         )
+        user.set_password(password)
         user.save()
         return user

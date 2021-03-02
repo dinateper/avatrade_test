@@ -1,0 +1,10 @@
+certifi==2020.12.5
+chardet==4.0.0
+clearbit==0.1.7
+Django==1.11.29
+djangorestframework==3.9.4
+idna==2.10
+pytz==2021.1
+requests==2.25.1
+simplejson==3.17.2
+urllib3==1.26.3
